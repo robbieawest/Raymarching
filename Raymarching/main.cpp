@@ -58,11 +58,13 @@ public:
 	Point p2;
 	Point p3;
 	Point p4;
+	Point p5;
+
+	bool drawingCorners;
 
 	rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol) {
 
-
-		sf::Vector2f oldpos = sf::Vector2f(pos.x - size.x / 2, pos.y + size.y / 2);
+		drawingCorners = false;
 
 		self.setSize(size);
 		self.setOrigin(size.x / 2, size.y / 2);
@@ -73,34 +75,51 @@ public:
 		self.setRotation(rot);
 
 		//Get corners using math
-		sf::Vector2f topLeftOld = sf::Vector2f(pos.x - size.x / 2, pos.y + size.y / 2);
+		sf::Vector2f oldpos = sf::Vector2f(pos.x - size.x / 2, pos.y + size.y / 2);
+
+
+		sf::Vector2f topLeftOld = oldpos;
+	//	vCout(topLeftOld, "Topleft");
 		sf::Vector2f topRightOld = sf::Vector2f(oldpos.x + size.x, oldpos.y);
+	//	vCout(topRightOld, "Topright");
 		sf::Vector2f bottomLeftOld = sf::Vector2f(oldpos.x, oldpos.y - size.y);
+	//	vCout(bottomLeftOld, "BottomLeft");
 		sf::Vector2f bottomRightOld = sf::Vector2f(oldpos.x + size.x, oldpos.y - size.y);
+//		vCout(bottomRightOld, "Bottomright");
+
+		//Come back here later, there is a wierd offset which i think is just attributed to the wierd outlines and origins, and not to my math
 
 		sf::Vector2f center = sf::Vector2f(oldpos.x + size.x / 2, oldpos.y - size.y / 2);
+	//	std::cout << center.x << " " << center.y << std::endl;
+	//	std::cout << oldpos.x << " " << oldpos.y << std::endl;
+	//	std::cout << pos.x << " " << pos.y << std::endl;
 
-		p1.move(conv(calcCorner(topLeftOld, center, rot)));
+		p1.move(conv(calcCorner(topLeftOld, center, rot, 1)));
 		p1.rep.setRadius(10);
 		p1.rep.setFillColor(sf::Color::Red);
 		p1.rep.setOrigin(5, 5);
 
-		std::cout << p1.pos.x << " " << p1.pos.y << std::endl;
+	//	std::cout << p1.pos.x << " " << p1.pos.y << std::endl;
 
-		p2.move(conv(topLeftOld));
-		p2.rep.setOrigin(5, 5);
+		p2.move(conv(calcCorner(topRightOld, center, rot, 2)));
 		p2.rep.setRadius(10);
-		p2.rep.setFillColor(sf::Color::Green);
+		p2.rep.setOrigin(5, 5);
+		p2.rep.setFillColor(sf::Color::Blue);
 
-		p3.move(conv(topRightOld));
+		p3.move(conv(calcCorner(bottomLeftOld, center, rot, 3)));
 		p3.rep.setOrigin(5, 5);
 		p3.rep.setRadius(10);
 		p3.rep.setFillColor(sf::Color::Green);
 			
-		p4.move(conv(bottomLeftOld));
-		p4.rep.setOrigin(5, 5);
+		p4.move(conv(calcCorner(bottomRightOld, center, rot, 4)));
 		p4.rep.setRadius(10);
-		p4.rep.setFillColor(sf::Color::Green);
+		p4.rep.setOrigin(5, 5);
+		p4.rep.setFillColor(sf::Color::Magenta);
+
+		p5.move(conv(center.x, center.y));
+		p5.rep.setRadius(10);
+		p5.rep.setOrigin(5, 5);
+		p5.rep.setFillColor(sf::Color::Blue);
 	}
 
 	void outputBounds() {
@@ -110,10 +129,14 @@ public:
 
 	void draw(sf::RenderWindow& window) {
 		window.draw(self);
-		window.draw(p1.rep);
-		window.draw(p2.rep);
-		window.draw(p3.rep);
-		window.draw(p4.rep);
+
+		if (drawingCorners) {
+			window.draw(p1.rep);
+			window.draw(p2.rep);
+			window.draw(p3.rep);
+			window.draw(p4.rep);
+			window.draw(p5.rep);
+		}
 	}
 };
 
@@ -126,11 +149,10 @@ int main() {
 
 	std::vector<rectUse> squares;
 
-	rectUse square = rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 0, sf::Color::Red);
-//	rectUse square1 = rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 0, sf::Color::Green);
+	rectUse square = rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 30, sf::Color::Red);
 
-//	squares.push_back(square1);
 	squares.push_back(square);
+
 	
 	while (window.isOpen()) {
 		sf::Event evnt;
@@ -141,7 +163,11 @@ int main() {
 				window.close();
 				break;
 			case sf::Event::TextEntered:
-				std::cout << p.pos.x << " " << p.pos.y << std::endl;
+				if(evnt.text.unicode == 'a')
+					std::cout << conv(p.pos.x, p.pos.y).x << " " << conv(p.pos.x, p.pos.y).y << std::endl;
+				else if (evnt.text.unicode == 'p') {
+					for (auto& x : squares)x.drawingCorners = !x.drawingCorners;
+				}
 				break;
 			}
 		}
