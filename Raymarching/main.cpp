@@ -37,16 +37,26 @@ public:
 class line {
 public:
 
+	sf::Vector2f p1;
+	sf::Vector2f p2;
 	float grad;
 	float yInte;
 
-	line(float m, float c) {
-		grad = m;
-		yInte = c;
+	line(sf::Vector2f p, sf::Vector2f P) {
+		p1 = p;
+		p2 = P;
+
+		grad = (p1.y - p2.y) / (p1.x - p2.x);
+		yInte = 0;
+		//get this next
 	}
 
 	float returnPerpGrad() {
 		return -1 * (1 / grad);
+	}
+
+	bool checkInLine(sf::Vector2f p) {
+		return p.y == p.x * grad + yInte;
 	}
 };
 
@@ -79,39 +89,31 @@ public:
 
 
 		sf::Vector2f topLeftOld = oldpos;
-	//	vCout(topLeftOld, "Topleft");
 		sf::Vector2f topRightOld = sf::Vector2f(oldpos.x + size.x, oldpos.y);
-	//	vCout(topRightOld, "Topright");
 		sf::Vector2f bottomLeftOld = sf::Vector2f(oldpos.x, oldpos.y - size.y);
-	//	vCout(bottomLeftOld, "BottomLeft");
 		sf::Vector2f bottomRightOld = sf::Vector2f(oldpos.x + size.x, oldpos.y - size.y);
-//		vCout(bottomRightOld, "Bottomright");
 
 		//Come back here later, there is a wierd offset which i think is just attributed to the wierd outlines and origins, and not to my math
 
 		sf::Vector2f center = sf::Vector2f(oldpos.x + size.x / 2, oldpos.y - size.y / 2);
-	//	std::cout << center.x << " " << center.y << std::endl;
-	//	std::cout << oldpos.x << " " << oldpos.y << std::endl;
-	//	std::cout << pos.x << " " << pos.y << std::endl;
 
-		p1.move(conv(calcCorner(topLeftOld, center, rot, 1)));
+		p1.move(conv(calcCorner(topLeftOld, center, rot, 4)));
 		p1.rep.setRadius(10);
 		p1.rep.setFillColor(sf::Color::Red);
 		p1.rep.setOrigin(5, 5);
 
-	//	std::cout << p1.pos.x << " " << p1.pos.y << std::endl;
 
-		p2.move(conv(calcCorner(topRightOld, center, rot, 2)));
+		p2.move(conv(calcCorner(topRightOld, center, rot, 1)));
 		p2.rep.setRadius(10);
 		p2.rep.setOrigin(5, 5);
 		p2.rep.setFillColor(sf::Color::Blue);
 
-		p3.move(conv(calcCorner(bottomLeftOld, center, rot, 3)));
+		p3.move(conv(calcCorner(bottomLeftOld, center, rot, 2)));
 		p3.rep.setOrigin(5, 5);
 		p3.rep.setRadius(10);
 		p3.rep.setFillColor(sf::Color::Green);
 			
-		p4.move(conv(calcCorner(bottomRightOld, center, rot, 4)));
+		p4.move(conv(calcCorner(bottomRightOld, center, rot, 3)));
 		p4.rep.setRadius(10);
 		p4.rep.setOrigin(5, 5);
 		p4.rep.setFillColor(sf::Color::Magenta);
@@ -149,7 +151,7 @@ int main() {
 
 	std::vector<rectUse> squares;
 
-	rectUse square = rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 30, sf::Color::Red);
+	rectUse square = rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 20, sf::Color::Red); //Only squares pls
 
 	squares.push_back(square);
 
