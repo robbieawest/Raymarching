@@ -47,8 +47,7 @@ public:
 		p2 = P;
 
 		grad = (p1.y - p2.y) / (p1.x - p2.x);
-		yInte = 0;
-		//get this next
+		yInte = p1.x * grad + p1.y;
 	}
 
 	float returnPerpGrad() {

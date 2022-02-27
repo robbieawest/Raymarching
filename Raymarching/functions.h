@@ -33,3 +33,18 @@ void vCout(sf::Vector2f v, std::string t) {
 		std::cout << v.x << " " << v.y << std::endl;
 	}
 }
+
+void rayMarch() {
+
+	//Main function
+	
+	//find closest point between all of squares / circles
+	//draw circle with the distance as the radius
+	//move along ray line for the distance: radius
+	//keep going until the distance moved is very very small
+	//project and display this
+
+
+}
+
+
