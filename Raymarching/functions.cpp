@@ -28,7 +28,28 @@ void vCout(sf::Vector2f v, std::string t) {
 	}
 }
 
-void rayMarch(float d, sf::Vector2f p, std::vector<circleUse> &c, std::vector<rectUse> &r) {
+sf::Vector2f closestPointC(circleUse C, sf::Vector2f point) {
+	sf::Vector2f fullD = conv(C.self.getPosition()) - conv(point);
+	vCout(conv(C.self.getPosition()), "Circle");
+	vCout(conv(point), "Point");
+	vCout(fullD, "Diff");
+	float theta = atan(fullD.y / fullD.x);
+	std::cout << theta * 180.0f / 3.1415926f << std::endl;
+
+	sf::Vector2f take = sf::Vector2f(C.self.getRadius() * cos(theta), C.self.getRadius() * sin(theta));
+	if ((fullD.x < 0 && take.x >= 0) || (fullD.x >= 0 && take.x < 0))take.x *= -1;
+	if ((fullD.y < 0 && take.y >= 0) || (fullD.y >= 0 && take.x < 0))take.y *= -1;
+
+	vCout(take, "Take");
+
+	sf::Vector2f v = fullD - take;
+	vCout(v, "End");
+	std::cout << "----------------" << std::endl;
+	return conv(point) + v;
+	
+}
+
+void rayMarch(float d, sf::Vector2f p, std::vector<circleUse> &c, std::vector<rectUse> &r, Point &t1, Point &t2) {
 
 	//Main function
 	
@@ -37,6 +58,9 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse> &c, std::vector<re
 	//move along ray line for the distance: radius
 	//keep going until the distance moved is very very small
 	//project and display this
+
+	t1.move(conv(closestPointC(c[0], p)));
+	t2.move(conv(closestPointC(c[1], p)));
 
 
 }

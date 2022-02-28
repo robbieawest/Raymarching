@@ -4,10 +4,6 @@
 
 
 
-
-
-
-
 int main() {
 	int windowWidth = 1200;
 	int windowHeight = 800;
@@ -25,8 +21,14 @@ int main() {
 	circles.push_back(circleUse(50, sf::Vector2f(25, 250), sf::Color::Blue));
 	circles.push_back(circleUse(20, sf::Vector2f(900, 200), sf::Color::Magenta));
 
+	Point test1;
+	test1.rep.setRadius(5);
+	Point test2;
+	test2.rep.setRadius(5);
+
 	bool movingP = true;
 	float dir = -1.0f;
+
 
 	
 	while (window.isOpen()) {
@@ -46,6 +48,9 @@ int main() {
 				else if (evnt.text.unicode == 'm') {
 					movingP = !movingP;
 				}
+				else if (evnt.text.unicode == 'r') {
+					rayMarch(dir, p.pos, circles, squares, test1, test2);
+				}
 				break;
 			}
 		}
@@ -54,14 +59,31 @@ int main() {
 			p.move(sf::Vector2f(float(mP.x), float(mP.y)));
 		}
 		else {
-			sf::Vector2f v = conv(sf::Vector2f(float(mP.x), float(mP.y))) - p.pos;
-			dir = atan(v.y / v.x) * 180.0f / 3.1415926f;
 
-			//change here
-			std::cout << dir << std::endl;
+			//calculate angle for raymarch
+			sf::Vector2f v = conv(sf::Vector2f(float(mP.x), float(mP.y))) - conv(p.pos);
+
+			if (v.x > 0 && v.y > 0){
+				dir = atan(v.x / v.y) * 180.0f / 3.1415926f;
+			}
+			else if (v.x > 0 && v.y < 0) {
+
+				dir = atan(v.y / v.x) * 180.0f / 3.1415926f;
+				dir = dir < 0 ? dir *= -1 : dir;
+				dir += 90;
+			}
+			else if (v.x < 0 && v.y < 0) {
+				dir = atan(v.x / v.y) * 180.0f / 3.1415926f;
+				dir += 180.0f;
+			}
+			else if (v.x < 0 && v.y > 0) {
+				dir = atan(v.y / v.x) * 180.0f / 3.1415926f;
+				dir = dir < 0 ? dir *= -1 : dir;
+				dir += 270.0f;
+			}
+
 		}
 
-		rayMarch(dir, p.pos, circles, squares);
 
 
 		window.clear();
@@ -70,6 +92,9 @@ int main() {
 		for (auto& x : circles)x.draw(window);
 
 		window.draw(p.rep);
+
+		window.draw(test1.rep);
+		window.draw(test2.rep);
 
 		window.display();
 	}
