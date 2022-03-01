@@ -9,6 +9,10 @@ public:
 	float yInte;
 
 	line(sf::Vector2f p, sf::Vector2f P);
+	line(float m, float c);
+
 	float returnPerpGrad();
 	bool checkInLine(sf::Vector2f p);
+
+	sf::Vector2f returnIntersect(line l);
 };

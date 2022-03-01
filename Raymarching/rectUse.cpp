@@ -28,27 +28,27 @@ rectUse::rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol)
 	p1.move(conv(calcCorner(topLeftOld, center, rot, 4)));
 	p1.rep.setRadius(10);
 	p1.rep.setFillColor(sf::Color::Red);
-	p1.rep.setOrigin(5, 5);
+	p1.rep.setOrigin(10, 10);
 
 
 	p2.move(conv(calcCorner(topRightOld, center, rot, 1)));
 	p2.rep.setRadius(10);
-	p2.rep.setOrigin(5, 5);
+	p2.rep.setOrigin(10, 10);
 	p2.rep.setFillColor(sf::Color::Blue);
 
 	p3.move(conv(calcCorner(bottomLeftOld, center, rot, 2)));
-	p3.rep.setOrigin(5, 5);
+	p3.rep.setOrigin(10, 10);
 	p3.rep.setRadius(10);
 	p3.rep.setFillColor(sf::Color::Green);
 		
 	p4.move(conv(calcCorner(bottomRightOld, center, rot, 3)));
 	p4.rep.setRadius(10);
-	p4.rep.setOrigin(5, 5);
+	p4.rep.setOrigin(10, 10);
 	p4.rep.setFillColor(sf::Color::Magenta);
 
 	p5.move(conv(center.x, center.y));
 	p5.rep.setRadius(10);
-	p5.rep.setOrigin(5, 5);
+	p5.rep.setOrigin(10, 10);
 	p5.rep.setFillColor(sf::Color::Blue);
 }
 

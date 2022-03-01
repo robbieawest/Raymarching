@@ -3,7 +3,7 @@
 Point::Point(sf::Vector2f p, float r) {
 
 	rep.setRadius(r);
-	rep.setOrigin(sf::Vector2f(r / 2.0f, r / 2.0f));
+	rep.setOrigin(sf::Vector2f(r, r));
 	rep.setFillColor(sf::Color::Green);
 	rep.setPosition(conv(p));
 

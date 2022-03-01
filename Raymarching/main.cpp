@@ -21,10 +21,8 @@ int main() {
 	circles.push_back(circleUse(50, sf::Vector2f(25, 250), sf::Color::Blue));
 	circles.push_back(circleUse(20, sf::Vector2f(900, 200), sf::Color::Magenta));
 
-	Point test1;
-	test1.rep.setRadius(5);
-	Point test2;
-	test2.rep.setRadius(5);
+	Point test1 = Point(sf::Vector2f(0.0f, 0.0f), 5);
+	Point test2 = Point(sf::Vector2f(0.0f, 0.0f), 5);
 
 	bool movingP = true;
 	float dir = -1.0f;
