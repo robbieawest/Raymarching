@@ -48,10 +48,71 @@ sf::Vector2f closestPointC(circleUse C, sf::Vector2f point) {
 
 sf::Vector2f closestPointR(rectUse R, sf::Vector2f point) {
 
+	std::vector<sf::Vector2f> corners;
+
+	corners.push_back(conv(R.p1.rep.getPosition()));
+	corners.push_back(conv(R.p2.rep.getPosition()));
+	corners.push_back(conv(R.p3.rep.getPosition()));
+	corners.push_back(conv(R.p4.rep.getPosition()));
+
+	int closest = 0;
+
+	for (int i = 1; i < corners.size(); i++) {
+		if (pythag(corners[i] - point) < pythag(corners[closest] - point)) {
+			closest = i;
+		}
+	}
+
+	//^ Get closest corner
+	//Now check which side next to corner is the closest side
+
+	float theta = atan((corners[closest] - point).y / (corners[closest] - point).x) * 3.1415926f / 180.0f;
+	sf::Vector2f other;
+
+	if (theta >= 45.0f) {
+		//right side
+		//get other corner
+		int temp = closest - 1;
+		if (temp == -1)temp = 3;
+
+		std::cout << temp << std::endl;
+
+		other = corners[temp];
+	}
+	else {
+		//left side
+
+		int temp = closest + 1;
+		if (temp == 4)temp = 0;
+
+
+		other = corners[temp];
+	}
+
+
+	//get line and perp line
+	line l(corners[closest], other);
+	float perpGrad = l.returnPerpGrad();
+	line l1(perpGrad, perpGrad * -1 * point.x + point.y);
+	l1.p1 = point;
+
+	//get intersection of two lines
+	sf::Vector2f intersect = l1.returnIntersect(l);
+
+	sf::Vector2f r;
+
+	if (l.checkInLine(intersect)) {
+		//intersect is the closest
+		r = intersect;
+	}
+	else {
+		//corner is closest
+		r = corners[closest];
+	}
+
+	return r;
+
 }
-
-
-
 
 void rayMarch(float d, sf::Vector2f p, std::vector<circleUse> &c, std::vector<rectUse> &r, Point &t1, Point &t2) {
 
@@ -76,6 +137,11 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse> &c, std::vector<re
 
 	//Rects
 
+	for (int i = 0; i < r.size(); i++) {
+		sf::Vector2f pointOnRect = conv(closestPointR(r[i], p));
+		if (pythag(closest - convP) > pythag(pointOnRect - convP)) closest = pointOnRect;
+	}
 
+	t1.move(conv(closest));
 
 }
