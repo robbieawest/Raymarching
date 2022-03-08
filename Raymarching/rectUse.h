@@ -15,6 +15,8 @@ public:
 
 	bool drawingCorners;
 
+	float rotation;
+
 	rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol);
 	void outputBounds();
 	void draw(sf::RenderWindow& window);

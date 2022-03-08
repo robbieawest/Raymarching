@@ -12,7 +12,7 @@ sf::Vector2f conv(float x, float y) {
 
 float pythag(sf::Vector2f v) {
 
-	return sqrt(pow(v.x, 2) + pow(v.y, 2));
+	return sqrt(v.x * v.x + v.y * v.y);
 }
 
 sf::Vector2f calcCorner(sf::Vector2f old, sf::Vector2f c, float theta, int type) {
@@ -48,7 +48,9 @@ sf::Vector2f closestPointC(circleUse C, sf::Vector2f point) {
 
 sf::Vector2f closestPointR(rectUse R, sf::Vector2f point) {
 
+	sf::Vector2f RPos = conv(R.self.getPosition());
 	std::vector<sf::Vector2f> corners;
+	point = conv(point);
 
 	corners.push_back(conv(R.p1.rep.getPosition()));
 	corners.push_back(conv(R.p2.rep.getPosition()));
@@ -63,9 +65,10 @@ sf::Vector2f closestPointR(rectUse R, sf::Vector2f point) {
 		}
 	}
 
-	//^ Get closest corner
+	//^ Get closest corner ( works ) 
 	//Now check which side next to corner is the closest side
 
+	/*
 	float theta = atan((corners[closest] - point).y / (corners[closest] - point).x) * 3.1415926f / 180.0f;
 	sf::Vector2f other;
 
@@ -89,19 +92,120 @@ sf::Vector2f closestPointR(rectUse R, sf::Vector2f point) {
 		other = corners[temp];
 	}
 
+	*/
+
+	int other = closest;
+
+
+	float theta = atan((point.x - corners[closest].x) / (point.y - corners[closest].y)) * (180.0f / 3.14159265f); //get angle of difference vector from corner -> point
+	theta = theta < 0 ? theta * -1 : theta; //make absolute value
+
+
+	int complement = 1;
+
+	//Rotation logic needed below
+
+	if (point.x > RPos.x) {
+		if (point.y > RPos.y) {
+			if (point.x > corners[closest].x) {
+				if (point.y > corners[closest].y)theta += 90.0f;
+				else theta = 90.0f - theta + 180.0f;
+
+			
+			}
+			else {
+
+
+				theta = 90.0f - theta;
+			}
+			complement *= -1;
+		}
+		else {
+			if (point.x > corners[closest].x) {
+
+				if (point.y > corners[closest].y) {
+					theta = 90.0f - theta + 180.0f;
+				}
+				else {
+					theta += 90.0f;
+				}
+			}
+			else {
+
+				theta = 90.0f - theta;
+			}
+		}
+	}
+	else {
+		if (point.y > RPos.y) {
+			if (point.y > corners[closest].y) {
+
+				if (point.x > corners[closest].x)theta = 90.0f - theta;
+				else theta += 90.0f;
+
+			}
+			else {
+
+				theta = 90.0f - theta + 180.0f;
+			}
+		}
+		else {
+			if (point.y < corners[closest].y) {
+
+				if (point.x > corners[closest].x)theta = 90.0f - theta;
+				else theta += 90.0f;
+			}
+			else {
+
+				theta = 90.0f - theta + 180.0f;
+			}
+
+			complement *= -1;
+		}
+	}
+
+	//Clean up later^
+
+
+	if (theta > 135.0f) {
+
+		
+		other = closest - 1.0f * complement;
+		int temp = complement < 0 ? 4 : -1;
+
+		if (other == temp) {
+			if (complement < 0)other = 0;
+			else other = 3;
+		}
+	}
+	else {
+	
+		other = closest + 1.0f * complement;
+		int temp = complement < 0 ? -1 : 4;
+
+		if (other == temp) {
+			if (complement < 0)other = 3;
+			else other = 0;
+
+		}
+	}
+
+
+
 
 	//get line and perp line
-	line l(corners[closest], other);
+	line l(corners[closest], corners[other]);
 	float perpGrad = l.returnPerpGrad();
+
 	line l1(perpGrad, perpGrad * -1 * point.x + point.y);
 	l1.p1 = point;
 
 	//get intersection of two lines
-	sf::Vector2f intersect = l1.returnIntersect(l);
+	sf::Vector2f intersect = l1.returnIntersect(l, point, corners[closest]);
 
 	sf::Vector2f r;
 
-	if (l.checkInLine(intersect)) {
+	if (l.checkInSmallLine(intersect, corners[closest])) { //second argument is example point
 		//intersect is the closest
 		r = intersect;
 	}
@@ -130,18 +234,41 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse> &c, std::vector<re
 
 	//Circles
 
+	
+
 	for (int i = 0; i < c.size(); i++) {
-		sf::Vector2f pointOnCircle = conv(closestPointC(c[i], p));
+		sf::Vector2f pointOnCircle = closestPointC(c[i], p);
 		if (pythag(closest - convP) > pythag(pointOnCircle - convP)) closest = pointOnCircle;
 	}
 
+	
+
 	//Rects
 
+	t1.rep.setFillColor(sf::Color::Red);
+
 	for (int i = 0; i < r.size(); i++) {
-		sf::Vector2f pointOnRect = conv(closestPointR(r[i], p));
+		sf::Vector2f pointOnRect = closestPointR(r[i], p);
 		if (pythag(closest - convP) > pythag(pointOnRect - convP)) closest = pointOnRect;
 	}
 
 	t1.move(conv(closest));
 
+}
+
+float MAX(float a, float b) {
+	return a > b ? a : b;
+}
+
+float MIN(float a, float b) {
+	return a < b ? a : b;
+}
+
+bool IN_RANGE(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c) {	
+
+	return c.x <= MAX(a.x, b.x)
+		&& c.x >= MIN(a.x, b.x)
+
+		&& c.y <= MAX(a.y, b.y)
+		&& c.y >= MIN(a.y, b.y);
 }

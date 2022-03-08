@@ -2,7 +2,7 @@
 #include "functions.h"
 #include <cmath>
 
-
+//TO DO: Apply rotation logic to the rect closest point function
 
 int main() {
 	int windowWidth = 1200;
@@ -15,11 +15,11 @@ int main() {
 	std::vector<rectUse> squares;
 	std::vector<circleUse> circles;
 
-	squares.push_back(rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 20, sf::Color::Red)); //Only squares
-	squares.push_back(rectUse(sf::Vector2f(50, 50), sf::Vector2f(200, 200), 40, sf::Color::Yellow));
+	squares.push_back(rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 10, sf::Color::Red)); //Only squares
+	squares.push_back(rectUse(sf::Vector2f(50, 50), sf::Vector2f(200, 200), 0, sf::Color::Yellow));
 
-	circles.push_back(circleUse(50, sf::Vector2f(25, 250), sf::Color::Blue));
-	circles.push_back(circleUse(20, sf::Vector2f(900, 200), sf::Color::Magenta));
+	circles.push_back(circleUse(100, sf::Vector2f(700, 400), sf::Color::Blue));
+	circles.push_back(circleUse(50, sf::Vector2f(900, 200), sf::Color::Magenta));
 
 	Point test1 = Point(sf::Vector2f(0.0f, 0.0f), 5);
 	Point test2 = Point(sf::Vector2f(0.0f, 0.0f), 5);
@@ -83,6 +83,7 @@ int main() {
 		}
 
 
+		rayMarch(dir, p.pos, circles, squares, test1, test2);
 
 		window.clear();
 

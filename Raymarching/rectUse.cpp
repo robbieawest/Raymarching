@@ -50,6 +50,8 @@ rectUse::rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol)
 	p5.rep.setRadius(10);
 	p5.rep.setOrigin(10, 10);
 	p5.rep.setFillColor(sf::Color::Blue);
+
+	rotation = rot;
 }
 
 void rectUse::outputBounds() {
