@@ -8,6 +8,6 @@ public:
 //	Point p2;
 //	Point p3;
 
-	circleUse(float r, sf::Vector2f pos, sf::Color col);
+	circleUse(float r, sf::Vector2f pos, sf::Color col, int opacity);
 	void draw(sf::RenderWindow& window);
 };

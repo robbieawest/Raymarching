@@ -7,9 +7,9 @@ rectUse::rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol)
 	self.setSize(size);
 	self.setOrigin(size.x / 2, size.y / 2);
 	self.setPosition(conv(pos));
-	self.setFillColor(sf::Color(0, 0, 0, 0));
+	self.setFillColor(sf::Color(0, 0, 0));
 	self.setOutlineColor(oCol);
-	self.setOutlineThickness(-3.0f); 
+	self.setOutlineThickness(1); 
 	self.setRotation(rot);
 
 	//Get corners using math
@@ -25,30 +25,31 @@ rectUse::rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol)
 
 	sf::Vector2f center = sf::Vector2f(oldpos.x + size.x / 2, oldpos.y - size.y / 2);
 
+	float pointRadius = 4.0f;
 	p4.move(conv(calcCorner(topLeftOld, center, rot, 4)));
-	p4.rep.setRadius(10);
+	p4.rep.setRadius(pointRadius);
 	p4.rep.setFillColor(sf::Color::Red);
-	p4.rep.setOrigin(10, 10);
+	p4.rep.setOrigin(pointRadius, pointRadius);
 
 
 	p1.move(conv(calcCorner(topRightOld, center, rot, 1)));
-	p1.rep.setRadius(10);
-	p1.rep.setOrigin(10, 10);
+	p1.rep.setRadius(pointRadius);
+	p1.rep.setOrigin(pointRadius, pointRadius);
 	p1.rep.setFillColor(sf::Color::Blue);
 
 	p2.move(conv(calcCorner(bottomLeftOld, center, rot, 2)));
-	p2.rep.setOrigin(10, 10);
-	p2.rep.setRadius(10);
+	p2.rep.setOrigin(pointRadius, pointRadius);
+	p2.rep.setRadius(pointRadius);
 	p2.rep.setFillColor(sf::Color::Green);
 		
 	p3.move(conv(calcCorner(bottomRightOld, center, rot, 3)));
-	p3.rep.setRadius(10);
-	p3.rep.setOrigin(10, 10);
+	p3.rep.setRadius(pointRadius);
+	p3.rep.setOrigin(pointRadius, pointRadius);
 	p3.rep.setFillColor(sf::Color::Magenta);
 
 	p5.move(conv(center.x, center.y));
-	p5.rep.setRadius(10);
-	p5.rep.setOrigin(10, 10);
+	p5.rep.setRadius(pointRadius);
+	p5.rep.setOrigin(pointRadius, pointRadius);
 	p5.rep.setFillColor(sf::Color::Blue);
 
 	rotation = rot;

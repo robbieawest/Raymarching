@@ -92,7 +92,7 @@ float returnDistToC(circleUse c, sf::Vector2f p) {
 	return pythag(p - conv(c.self.getPosition())) - c.self.getRadius();
 }
 
-void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<rectUse>& r, circleUse& tc, std::vector<circleUse> &radii, std::vector<sf::RectangleShape> &collisions, sf::RectangleShape &line) {
+void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<rectUse>& r, std::vector<circleUse> &radii, std::vector<sf::RectangleShape> &collisions, sf::RectangleShape &line) {
 
 	sf::Vector2f convP = conv(p);
 
@@ -115,6 +115,7 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 	//This allows computer to view calculations with an acute angle, but still take the non-acute picture into account
 	//just store values on sign of vector based on angle
 	sf::Vector2f dirComplement(1.0f, 1.0f);
+	float originalD = d;
 
 	if (d <= 90.0f) {
 		d = 90.0f - d;
@@ -152,7 +153,7 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 		}
 
 
-		radii.push_back(circleUse(closestDistance, currentPos, sf::Color(100, 100, 100)));
+		radii.push_back(circleUse(closestDistance, currentPos, sf::Color(100, 100, 100), 0));
 
 		//Update Position
 
@@ -175,6 +176,9 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 	}
 
 	//Line
+	line.setSize(sf::Vector2f(1.0f, pythag(currentPos - convP)));
+	line.setPosition(p);
+	line.setRotation(originalD - 180.0f);
 }
 
 
