@@ -114,7 +114,29 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 	sf::Vector2f currentPos = convP;
 	radii.clear();
 
-	vCout(currentPos, "Raymarch starting at");
+	//Deal with direction
+	//This allows computer to view calculations with an acute angle, but still take the non-acute picture into account
+	//just store values on sign of vector based on angle
+	sf::Vector2f dirComplement(1.0f, 1.0f);
+
+	//This is still buggy, very close tho
+	if (d >= 90.0f) {
+		if (d <= 180.0f) {
+			dirComplement.y *= -1.0f;
+			d -= 90.0f;
+		}
+		else if (d <= 270.0f) {
+			dirComplement.x *= -1.0f; dirComplement.y *= -1.0f;
+			d -= 180.0f;
+		}
+		else if (d <= 360.0f) {
+			dirComplement.x *= -1;
+			d - 270.0f;
+		}
+	}
+
+
+//	vCout(currentPos, "Raymarch starting at");
 
 	while (closestDistance > 1 && !outOfBounds(conv(currentPos))) {
 		//Advance
@@ -132,25 +154,31 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 			closestDistance = MIN(d, closestDistance);
 		}
 
-		std::cout << "Closest dist: " << closestDistance << std::endl;
-		std::cout << "Direction: " << d << std::endl;
+	//	std::cout << "Closest dist: " << closestDistance << std::endl;
+	//	std::cout << "Acute Direction: " << d << std::endl;
+	//	vCout(dirComplement, "Direction complements");
 
 		radii.push_back(circleUse(closestDistance, currentPos, sf::Color(100, 100, 100)));
 
 		//Update Position
-		vCout(currentPos, "Current Pos Before");
-		currentPos += sf::Vector2f(closestDistance * cos(d * 3.1415926f / 180.0f), closestDistance * sin(d * 3.1415926f / 180.0f)); //Fix this
-		vCout(currentPos, "Current Pos After");
+	//	vCout(currentPos, "Current Pos Before");
+
+		sf::Vector2f addV = sf::Vector2f(closestDistance * cos(d * 3.1415926f / 180.0f), closestDistance * sin(d * 3.1415926f / 180.0f));
+		addV.x *= dirComplement.x;
+		addV.y *= dirComplement.y;
+		currentPos += addV;
+
+	//	vCout(currentPos, "Current Pos After");
 
 
 	}
 
-	std::cout << "Raymarch ended at " << currentPos.x << " " << currentPos.y << std::endl;
+//	std::cout << "Raymarch ended at " << currentPos.x << " " << currentPos.y << std::endl;
 	if (closestDistance < 1) {
 		sf::RectangleShape temp(sf::Vector2f(1, 1));
 		temp.setPosition(conv(currentPos));
 
-		std::cout << "Collision placed and occured at " << currentPos.x << " " << currentPos.y << std::endl;
+	//	std::cout << "Collision placed and occured at " << currentPos.x << " " << currentPos.y << std::endl;
 		collisions.push_back(temp);
 	}
 
