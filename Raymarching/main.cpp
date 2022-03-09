@@ -30,6 +30,18 @@ int main() {
 	sf::RectangleShape line;
 	line.setFillColor(sf::Color::White);
 
+	//FPS counter
+	//Font
+	sf::Font calibri;
+	if (!calibri.loadFromFile("calibri.ttf")) {
+		std::cout << "Error loading calibri font" << std::endl;
+	}
+	sf::Text fps;
+	fps.setCharacterSize(25.0f);
+	fps.setString("");
+	fps.setFillColor(sf::Color(255, 0, 0, 200));
+	fps.setFont(calibri);
+
 	
 	while (window.isOpen()) {
 		sf::Event evnt;
@@ -82,7 +94,7 @@ int main() {
 				dir += 270.0f;
 			}
 
-			rayMarch(dir, p.pos, circles, squares, testCircle, radii, collisions, line);
+		//	rayMarch(dir, p.pos, circles, squares, testCircle, radii, collisions, line);
 		}
 
 	//	testCircle.self.setPosition(sf::Vector2f(float(mP.x), float(mP.y)));

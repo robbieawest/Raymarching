@@ -108,9 +108,6 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 
 	float closestDistance = 1000000.0f; //very high so anything would be closer
 
-	//tc.self.setRadius(closestDistance);
-//	tc.self.setOrigin(closestDistance, closestDistance);
-
 	sf::Vector2f currentPos = convP;
 	radii.clear();
 
@@ -119,24 +116,24 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 	//just store values on sign of vector based on angle
 	sf::Vector2f dirComplement(1.0f, 1.0f);
 
-	//This is still buggy, very close tho
-	if (d >= 90.0f) {
-		if (d <= 180.0f) {
-			dirComplement.y *= -1.0f;
-			d -= 90.0f;
-		}
-		else if (d <= 270.0f) {
-			dirComplement.x *= -1.0f; dirComplement.y *= -1.0f;
-			d -= 180.0f;
-		}
-		else if (d <= 360.0f) {
-			dirComplement.x *= -1;
-			d - 270.0f;
-		}
+	if (d <= 90.0f) {
+		d = 90.0f - d;
+	}
+	else if (d <= 180.0f) {
+		dirComplement.y *= -1.0f;
+		d -= 90.0f;
+	}
+	else if (d <= 270.0f) {
+		dirComplement.x *= -1.0f; dirComplement.y *= -1.0f;
+		d -= 180.0f;
+		d = 90.0f - d;
+	}
+	else if (d <= 360.0f) {
+		dirComplement.x *= -1;
+		d -= 270.0f;
 	}
 
 
-//	vCout(currentPos, "Raymarch starting at");
 
 	while (closestDistance > 1 && !outOfBounds(conv(currentPos))) {
 		//Advance
@@ -154,21 +151,16 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 			closestDistance = MIN(d, closestDistance);
 		}
 
-	//	std::cout << "Closest dist: " << closestDistance << std::endl;
-	//	std::cout << "Acute Direction: " << d << std::endl;
-	//	vCout(dirComplement, "Direction complements");
 
 		radii.push_back(circleUse(closestDistance, currentPos, sf::Color(100, 100, 100)));
 
 		//Update Position
-	//	vCout(currentPos, "Current Pos Before");
 
 		sf::Vector2f addV = sf::Vector2f(closestDistance * cos(d * 3.1415926f / 180.0f), closestDistance * sin(d * 3.1415926f / 180.0f));
 		addV.x *= dirComplement.x;
 		addV.y *= dirComplement.y;
 		currentPos += addV;
 
-	//	vCout(currentPos, "Current Pos After");
 
 
 	}
