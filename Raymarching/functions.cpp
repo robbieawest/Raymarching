@@ -15,6 +15,18 @@ float pythag(sf::Vector2f v) {
 	return sqrt(v.x * v.x + v.y * v.y);
 }
 
+float MAX(float a, float b) {
+	return a > b ? a : b;
+}
+
+float MIN(float a, float b) {
+	return a < b ? a : b;
+}
+
+bool outOfBounds(sf::Vector2f v) {
+	return v.x < 0.0f || v.y < 0.0f || v.x > 1200.0f || v.y > 800.0f;
+}
+
 sf::Vector2f calcCorner(sf::Vector2f old, sf::Vector2f c, float theta, int type) {
 
 	float z = pythag(c - old);
@@ -31,238 +43,120 @@ void vCout(sf::Vector2f v, std::string t) {
 	}
 }
 
-sf::Vector2f closestPointC(circleUse C, sf::Vector2f point) {
 
-	sf::Vector2f fullD = conv(C.self.getPosition()) - conv(point);
-	float theta = atan(fullD.y / fullD.x);
+float distanceToLineSegment(line l, sf::Vector2f p) {
+	//get mathematical representation, get perpendicular grad and set it to new line intersecting p, get intersect of two lines and check if inside range of segment
+	//if this is true^, then get distance from intersect
+	//if false then return 1000000
 
-	sf::Vector2f take = sf::Vector2f(C.self.getRadius() * cos(theta), C.self.getRadius() * sin(theta));
-
-	if ((fullD.x < 0 && take.x >= 0) || (fullD.x >= 0 && take.x < 0))take.x *= -1;
-	if ((fullD.y < 0 && take.y >= 0) || (fullD.y >= 0 && take.x < 0))take.y *= -1;
-
-
-	return conv(point) + (fullD - take);
-	
-}
-
-sf::Vector2f closestPointR(rectUse R, sf::Vector2f point) {
-
-	sf::Vector2f RPos = conv(R.self.getPosition());
-	std::vector<sf::Vector2f> corners;
-	point = conv(point);
-
-	corners.push_back(conv(R.p1.rep.getPosition()));
-	corners.push_back(conv(R.p2.rep.getPosition()));
-	corners.push_back(conv(R.p3.rep.getPosition()));
-	corners.push_back(conv(R.p4.rep.getPosition()));
-
-	int closest = 0;
-
-	for (int i = 1; i < corners.size(); i++) {
-		if (pythag(corners[i] - point) < pythag(corners[closest] - point)) {
-			closest = i;
-		}
-	}
-
-	//^ Get closest corner ( works ) 
-	//Now check which side next to corner is the closest side
-
-	/*
-	float theta = atan((corners[closest] - point).y / (corners[closest] - point).x) * 3.1415926f / 180.0f;
-	sf::Vector2f other;
-
-	if (theta >= 45.0f) {
-		//right side
-		//get other corner
-		int temp = closest - 1;
-		if (temp == -1)temp = 3;
-
-		std::cout << temp << std::endl;
-
-		other = corners[temp];
-	}
-	else {
-		//left side
-
-		int temp = closest + 1;
-		if (temp == 4)temp = 0;
-
-
-		other = corners[temp];
-	}
-
-	*/
-
-	int other = closest;
-
-
-	float theta = atan((point.x - corners[closest].x) / (point.y - corners[closest].y)) * (180.0f / 3.14159265f); //get angle of difference vector from corner -> point
-	theta = theta < 0 ? theta * -1 : theta; //make absolute value
-
-
-	int complement = 1;
-
-	//Rotation logic needed below
-
-	if (point.x > RPos.x) {
-		if (point.y > RPos.y) {
-			if (point.x > corners[closest].x) {
-				if (point.y > corners[closest].y)theta += 90.0f;
-				else theta = 90.0f - theta + 180.0f;
-
-			
-			}
-			else {
-
-
-				theta = 90.0f - theta;
-			}
-			complement *= -1;
-		}
-		else {
-			if (point.x > corners[closest].x) {
-
-				if (point.y > corners[closest].y) {
-					theta = 90.0f - theta + 180.0f;
-				}
-				else {
-					theta += 90.0f;
-				}
-			}
-			else {
-
-				theta = 90.0f - theta;
-			}
-		}
-	}
-	else {
-		if (point.y > RPos.y) {
-			if (point.y > corners[closest].y) {
-
-				if (point.x > corners[closest].x)theta = 90.0f - theta;
-				else theta += 90.0f;
-
-			}
-			else {
-
-				theta = 90.0f - theta + 180.0f;
-			}
-		}
-		else {
-			if (point.y < corners[closest].y) {
-
-				if (point.x > corners[closest].x)theta = 90.0f - theta;
-				else theta += 90.0f;
-			}
-			else {
-
-				theta = 90.0f - theta + 180.0f;
-			}
-
-			complement *= -1;
-		}
-	}
-
-	//Clean up later^
-
-
-	if (theta > 135.0f) {
-
-		
-		other = closest - 1.0f * complement;
-		int temp = complement < 0 ? 4 : -1;
-
-		if (other == temp) {
-			if (complement < 0)other = 0;
-			else other = 3;
-		}
-	}
-	else {
-	
-		other = closest + 1.0f * complement;
-		int temp = complement < 0 ? -1 : 4;
-
-		if (other == temp) {
-			if (complement < 0)other = 3;
-			else other = 0;
-
-		}
-	}
-
-
-
-
-	//get line and perp line
-	line l(corners[closest], corners[other]);
 	float perpGrad = l.returnPerpGrad();
 
-	line l1(perpGrad, perpGrad * -1 * point.x + point.y);
-	l1.p1 = point;
+	line perpLine(perpGrad, perpGrad * -1 * p.x + p.y);
+	sf::Vector2f intersect = l.returnIntersect(perpLine, l.p1, perpLine.p1);
 
-	//get intersection of two lines
-	sf::Vector2f intersect = l1.returnIntersect(l, point, corners[closest]);
-
-	sf::Vector2f r;
-
-	if (l.checkInSmallLine(intersect, corners[closest])) { //second argument is example point
-		//intersect is the closest
-		r = intersect;
+	if (l.checkInSmallLine(intersect, l.p1)) {
+		return pythag(intersect - p);
 	}
 	else {
-		//corner is closest
-		r = corners[closest];
+		return 1000000.0f;
 	}
-
-	return r;
-
 }
 
-void rayMarch(float d, sf::Vector2f p, std::vector<circleUse> &c, std::vector<rectUse> &r, Point &t1, Point &t2) {
+float returnDistToR(rectUse& r, sf::Vector2f p) {
+	std::vector<float> potentialDistances;
+
+	std::vector<sf::Vector2f> corners;
+	corners.push_back(conv(r.p1.pos));
+	corners.push_back(conv(r.p2.pos));
+	corners.push_back(conv(r.p3.pos));
+	corners.push_back(conv(r.p4.pos));
+
+
+	potentialDistances.push_back(pythag(p - corners[0]));
+	potentialDistances.push_back(pythag(p - corners[1]));
+	potentialDistances.push_back(pythag(p - corners[2]));
+	potentialDistances.push_back(pythag(p - corners[3]));
+
+	potentialDistances.push_back(distanceToLineSegment(line(corners[1], corners[0]), p));
+	potentialDistances.push_back(distanceToLineSegment(line(corners[2], corners[1]), p));
+	potentialDistances.push_back(distanceToLineSegment(line(corners[3], corners[2]), p));
+	potentialDistances.push_back(distanceToLineSegment(line(corners[0], corners[3]), p));
+
+	float fReturn = potentialDistances[0];
+	
+	for (auto& x : potentialDistances) fReturn = x < fReturn ? x : fReturn;
+	return fReturn;
+}
+
+float returnDistToC(circleUse c, sf::Vector2f p) {
+	return pythag(p - conv(c.self.getPosition())) - c.self.getRadius();
+}
+
+void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<rectUse>& r, circleUse& tc, std::vector<circleUse> &radii, std::vector<sf::RectangleShape> &collisions, sf::RectangleShape &line) {
 
 	sf::Vector2f convP = conv(p);
 
 	//Main function
 	
-	//find closest point between all of squares / circles
+	//find closest distance between point and any shape
 	//draw circle with the distance as the radius
 	//move along ray line for the distance: radius
 	//keep going until the distance moved is very very small
 	//project and display this
 
-	sf::Vector2f closest = sf::Vector2f(10000, 100000); //very high number so anything would be closer
+	//^This or it goes out of bounds
 
-	//Circles
+	float closestDistance = 1000000.0f; //very high so anything would be closer
 
-	
+	//tc.self.setRadius(closestDistance);
+//	tc.self.setOrigin(closestDistance, closestDistance);
 
-	for (int i = 0; i < c.size(); i++) {
-		sf::Vector2f pointOnCircle = closestPointC(c[i], p);
-		if (pythag(closest - convP) > pythag(pointOnCircle - convP)) closest = pointOnCircle;
+	sf::Vector2f currentPos = convP;
+	radii.clear();
+
+	vCout(currentPos, "Raymarch starting at");
+
+	while (closestDistance > 1 && !outOfBounds(conv(currentPos))) {
+		//Advance
+
+		//Find closest
+		//Circles
+		closestDistance = 100000.0f;
+		for (auto& x : c) {
+			float d = returnDistToC(x, currentPos);
+			closestDistance = MIN(d, closestDistance);
+		}
+		//Rects
+		for (auto &x : r) {
+			float d = returnDistToR(x, currentPos);
+			closestDistance = MIN(d, closestDistance);
+		}
+
+		std::cout << "Closest dist: " << closestDistance << std::endl;
+		std::cout << "Direction: " << d << std::endl;
+
+		radii.push_back(circleUse(closestDistance, currentPos, sf::Color(100, 100, 100)));
+
+		//Update Position
+		vCout(currentPos, "Current Pos Before");
+		currentPos += sf::Vector2f(closestDistance * cos(d * 3.1415926f / 180.0f), closestDistance * sin(d * 3.1415926f / 180.0f)); //Fix this
+		vCout(currentPos, "Current Pos After");
+
+
 	}
 
-	
+	std::cout << "Raymarch ended at " << currentPos.x << " " << currentPos.y << std::endl;
+	if (closestDistance < 1) {
+		sf::RectangleShape temp(sf::Vector2f(1, 1));
+		temp.setPosition(conv(currentPos));
 
-	//Rects
-
-	t1.rep.setFillColor(sf::Color::Red);
-
-	for (int i = 0; i < r.size(); i++) {
-		sf::Vector2f pointOnRect = closestPointR(r[i], p);
-		if (pythag(closest - convP) > pythag(pointOnRect - convP)) closest = pointOnRect;
+		std::cout << "Collision placed and occured at " << currentPos.x << " " << currentPos.y << std::endl;
+		collisions.push_back(temp);
 	}
 
-	t1.move(conv(closest));
-
+	//Line
 }
 
-float MAX(float a, float b) {
-	return a > b ? a : b;
-}
-
-float MIN(float a, float b) {
-	return a < b ? a : b;
-}
 
 bool IN_RANGE(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c) {	
 

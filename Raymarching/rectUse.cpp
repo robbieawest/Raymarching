@@ -7,7 +7,7 @@ rectUse::rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol)
 	self.setSize(size);
 	self.setOrigin(size.x / 2, size.y / 2);
 	self.setPosition(conv(pos));
-	self.setFillColor(sf::Color::Black);
+	self.setFillColor(sf::Color(0, 0, 0, 0));
 	self.setOutlineColor(oCol);
 	self.setOutlineThickness(-3.0f); 
 	self.setRotation(rot);
@@ -52,6 +52,11 @@ rectUse::rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol)
 	p5.rep.setFillColor(sf::Color::Blue);
 
 	rotation = rot;
+	nonRotatedCorners.push_back(conv(calcCorner(topRightOld, center, 0.0f, 1)));
+	nonRotatedCorners.push_back(conv(calcCorner(bottomRightOld, center, 0.0f, 2)));
+	nonRotatedCorners.push_back(conv(calcCorner(bottomLeftOld, center, 0.0f, 3)));
+	nonRotatedCorners.push_back(conv(calcCorner(topLeftOld, center, 0.0f, 4)));
+	
 }
 
 void rectUse::outputBounds() {

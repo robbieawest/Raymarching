@@ -1,8 +1,6 @@
 
 #include "functions.h"
-#include <cmath>
 
-//TO DO: Apply rotation logic to the rect closest point function
 
 int main() {
 	int windowWidth = 1200;
@@ -15,18 +13,22 @@ int main() {
 	std::vector<rectUse> squares;
 	std::vector<circleUse> circles;
 
-	squares.push_back(rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 10, sf::Color::Red)); //Only squares
-	squares.push_back(rectUse(sf::Vector2f(50, 50), sf::Vector2f(200, 200), 0, sf::Color::Yellow));
+	squares.push_back(rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 30, sf::Color::Red)); //Only squares
+	squares.push_back(rectUse(sf::Vector2f(250, 250), sf::Vector2f(200, 200), 50, sf::Color::Yellow));
 
 	circles.push_back(circleUse(100, sf::Vector2f(700, 400), sf::Color::Blue));
 	circles.push_back(circleUse(50, sf::Vector2f(900, 200), sf::Color::Magenta));
 
-	Point test1 = Point(sf::Vector2f(0.0f, 0.0f), 5);
-	Point test2 = Point(sf::Vector2f(0.0f, 0.0f), 5);
+	circleUse testCircle(0.0f, sf::Vector2f(0.0f, 0.0f), sf::Color(200, 200, 200));
 
 	bool movingP = true;
 	float dir = -1.0f;
 
+	//Items for displaying
+	std::vector<circleUse> radii;
+	std::vector<sf::RectangleShape> collisions;
+	sf::RectangleShape line;
+	line.setFillColor(sf::Color::White);
 
 	
 	while (window.isOpen()) {
@@ -47,7 +49,7 @@ int main() {
 					movingP = !movingP;
 				}
 				else if (evnt.text.unicode == 'r') {
-					rayMarch(dir, p.pos, circles, squares, test1, test2);
+					rayMarch(dir, p.pos, circles, squares, testCircle, radii, collisions, line);
 				}
 				break;
 			}
@@ -80,21 +82,28 @@ int main() {
 				dir += 270.0f;
 			}
 
+		//	rayMarch(dir, p.pos, circles, squares, testCircle, radii, collisions, line);
 		}
 
+	//	testCircle.self.setPosition(sf::Vector2f(float(mP.x), float(mP.y)));
 
-		rayMarch(dir, p.pos, circles, squares, test1, test2);
+
 
 		window.clear();
+
+	//	testCircle.draw(window);
 
 		for (auto& x : squares)x.draw(window);
 		for (auto& x : circles)x.draw(window);
 
 		window.draw(p.rep);
 
-		window.draw(test1.rep);
-		window.draw(test2.rep);
+		//Displays for algorithm
 
+		for (auto& x : radii)x.draw(window);
+		for (auto& x : collisions)window.draw(x);
+		window.draw(line);
+		
 		window.display();
 	}
 

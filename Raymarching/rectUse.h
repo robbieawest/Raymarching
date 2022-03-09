@@ -1,6 +1,4 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <iostream>
 #include "functions.h"
 
 class rectUse {
@@ -12,6 +10,8 @@ public:
 	Point p3;
 	Point p4;
 	Point p5;
+
+	std::vector<sf::Vector2f> nonRotatedCorners;
 
 	bool drawingCorners;
 
