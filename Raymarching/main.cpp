@@ -23,6 +23,7 @@ int main() {
 
 	bool movingP = true;
 	bool mouseRay = false;
+	bool fog = false;
 
 	float dir = -1.0f;
 
@@ -30,6 +31,7 @@ int main() {
 	std::vector<circleUse> radii;
 	std::vector<sf::RectangleShape> collisions;
 	sf::RectangleShape line;
+	std::vector<sf::RectangleShape> fogLines;
 	line.setFillColor(sf::Color::White);
 
 	//FPS counter
@@ -67,14 +69,22 @@ int main() {
 				if (evnt.text.unicode == 'm') {
 					//Stop point moving and start raymarching towards mouse position
 					movingP = !movingP;
+
+					fog = false;
+					fogLines.clear();
+
 					if (movingP) {
 						radii.clear();
 						line.setSize(sf::Vector2f(0.0f, 0.0f));
 					}
+
 					mouseRay = !mouseRay;
 				}
 				else if (evnt.text.unicode == 's') {
 					//Start/Stop spinng
+					fog = false;
+					fogLines.clear();
+
 					if (!mouseRay && !movingP) {
 						movingP = !movingP;
 						if (movingP) {
@@ -92,6 +102,12 @@ int main() {
 				}
 				else if (evnt.text.unicode == 'f') {
 					//Turn on fog of war
+
+					movingP = true;
+					mouseRay = false;
+					fog = true;
+					radii.clear();
+					line.setSize(sf::Vector2f(0.0f, 0.0f));
 				}
 				break;
 			}
@@ -135,6 +151,25 @@ int main() {
 			rayMarch(dir, p.pos, circles, squares, radii, collisions, line);
 		}
 
+		if (fog) {
+			//Fog of war
+			//Shoot rays in 360
+
+			fogLines.clear();
+
+			dir = 0.0f;
+			int i = 0;
+			while (dir < 360.0f) {
+				
+				fogLines.push_back(sf::RectangleShape(sf::Vector2f(0.0f, 0.0f)));
+				rayMarch(dir, p.pos, circles, squares, radii, collisions, fogLines[i]);
+
+				i++;
+				dir += 5.0f;
+			}
+			collisions.clear();
+		}
+
 		fps.setString(std::to_string(deltaTime));
 
 		//Clear back buffer
@@ -151,9 +186,15 @@ int main() {
 
 		//Displays for algorithm
 
-		for (auto& x : radii)x.draw(window);
-		for (auto& x : collisions)window.draw(x);
-		window.draw(line);
+		if (!fog) {
+
+			for (auto& x : radii)x.draw(window);
+			for (auto& x : collisions)window.draw(x);
+			window.draw(line);
+		}
+		else {
+			for (auto& x : fogLines)window.draw(x);
+		}
 
 		//FPS
 		window.draw(fps);
