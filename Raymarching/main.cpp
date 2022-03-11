@@ -13,11 +13,12 @@ int main() {
 	std::vector<rectUse> squares;
 	std::vector<circleUse> circles;
 
-	squares.push_back(rectUse(sf::Vector2f(100, 100), sf::Vector2f(500, 500), 30, sf::Color(0, 0, 0))); //Only squares
-	squares.push_back(rectUse(sf::Vector2f(250, 250), sf::Vector2f(200, 200), 50, sf::Color(0, 0, 0)));
+	squares.push_back(rectUse(100.0f, sf::Vector2f(500.0f, 500.0f), 30.0f, sf::Color(0, 0, 0))); 
+	squares.push_back(rectUse(200.0f, sf::Vector2f(200.0f, 200.0f), 50.0f, sf::Color(0, 0, 0)));
+	squares.push_back(rectUse(150.0f, sf::Vector2f(900.0f, 600.0f), 60.0f, sf::Color(0, 0, 0)));
 
-	circles.push_back(circleUse(100, sf::Vector2f(700, 400), sf::Color(0, 0, 0), 255));
-	circles.push_back(circleUse(50, sf::Vector2f(900, 200), sf::Color(0, 0, 0), 255));
+	circles.push_back(circleUse(100.0f, sf::Vector2f(700.0f, 400.0f), sf::Color(0, 0, 0), 255));
+	circles.push_back(circleUse(50.0f, sf::Vector2f(900.0f, 200.0f), sf::Color(0, 0, 0), 255));
 
 
 	bool movingP = true;
@@ -63,19 +64,23 @@ int main() {
 				window.close();
 				break;
 			case sf::Event::TextEntered:
-				if (evnt.text.unicode == 'p') {
-					//Draw points on squares
-					for (auto& x : squares)x.drawingCorners = !x.drawingCorners;
-				}
-				else if (evnt.text.unicode == 'm') {
+				if (evnt.text.unicode == 'm') {
 					//Stop point moving and start raymarching towards mouse position
 					movingP = !movingP;
+					if (movingP) {
+						radii.clear();
+						line.setSize(sf::Vector2f(0.0f, 0.0f));
+					}
 					mouseRay = !mouseRay;
 				}
 				else if (evnt.text.unicode == 's') {
 					//Start/Stop spinng
 					if (!mouseRay && !movingP) {
 						movingP = !movingP;
+						if (movingP) {
+							radii.clear();
+							line.setSize(sf::Vector2f(0.0f, 0.0f));
+						}
 					}
 					else {
 						movingP = false;
@@ -84,6 +89,9 @@ int main() {
 				}
 				else if (evnt.text.unicode == 'c') {
 					collisions.clear();
+				}
+				else if (evnt.text.unicode == 'f') {
+					//Turn on fog of war
 				}
 				break;
 			}

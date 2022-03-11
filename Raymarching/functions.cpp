@@ -63,24 +63,18 @@ float distanceToLineSegment(line l, sf::Vector2f p) {
 }
 
 float returnDistToR(rectUse& r, sf::Vector2f p) {
+
 	std::vector<float> potentialDistances;
 
-	std::vector<sf::Vector2f> corners;
-	corners.push_back(conv(r.p1.pos));
-	corners.push_back(conv(r.p2.pos));
-	corners.push_back(conv(r.p3.pos));
-	corners.push_back(conv(r.p4.pos));
+	potentialDistances.push_back(pythag(p - r.corners[0]));
+	potentialDistances.push_back(pythag(p - r.corners[1]));
+	potentialDistances.push_back(pythag(p - r.corners[2]));
+	potentialDistances.push_back(pythag(p - r.corners[3]));
 
-
-	potentialDistances.push_back(pythag(p - corners[0]));
-	potentialDistances.push_back(pythag(p - corners[1]));
-	potentialDistances.push_back(pythag(p - corners[2]));
-	potentialDistances.push_back(pythag(p - corners[3]));
-
-	potentialDistances.push_back(distanceToLineSegment(line(corners[1], corners[0]), p));
-	potentialDistances.push_back(distanceToLineSegment(line(corners[2], corners[1]), p));
-	potentialDistances.push_back(distanceToLineSegment(line(corners[3], corners[2]), p));
-	potentialDistances.push_back(distanceToLineSegment(line(corners[0], corners[3]), p));
+	potentialDistances.push_back(distanceToLineSegment(line(r.corners[1], r.corners[0]), p));
+	potentialDistances.push_back(distanceToLineSegment(line(r.corners[2], r.corners[1]), p));
+	potentialDistances.push_back(distanceToLineSegment(line(r.corners[3], r.corners[2]), p));
+	potentialDistances.push_back(distanceToLineSegment(line(r.corners[0], r.corners[3]), p));
 
 	float fReturn = potentialDistances[0];
 	

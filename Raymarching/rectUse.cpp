@@ -1,8 +1,8 @@
 #include "functions.h"
 
-rectUse::rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol) {
+rectUse::rectUse(float width, sf::Vector2f pos, float rot, sf::Color oCol) {
 
-	drawingCorners = false;
+	sf::Vector2f size(width, width);
 
 	self.setSize(size);
 	self.setOrigin(size.x / 2, size.y / 2);
@@ -26,37 +26,14 @@ rectUse::rectUse(sf::Vector2f size, sf::Vector2f pos, float rot, sf::Color oCol)
 	sf::Vector2f center = sf::Vector2f(oldpos.x + size.x / 2, oldpos.y - size.y / 2);
 
 	float pointRadius = 4.0f;
-	p4.move(conv(calcCorner(topLeftOld, center, rot, 4)));
-	p4.rep.setRadius(pointRadius);
-	p4.rep.setFillColor(sf::Color::Red);
-	p4.rep.setOrigin(pointRadius, pointRadius);
 
+	corners.push_back(calcCorner(topRightOld, center, rot, 1));
+	corners.push_back(calcCorner(bottomRightOld, center, rot, 2));
+	corners.push_back(calcCorner(bottomLeftOld, center, rot, 3));
+	corners.push_back(calcCorner(topLeftOld, center, rot, 4));
 
-	p1.move(conv(calcCorner(topRightOld, center, rot, 1)));
-	p1.rep.setRadius(pointRadius);
-	p1.rep.setOrigin(pointRadius, pointRadius);
-	p1.rep.setFillColor(sf::Color::Blue);
-
-	p2.move(conv(calcCorner(bottomLeftOld, center, rot, 2)));
-	p2.rep.setOrigin(pointRadius, pointRadius);
-	p2.rep.setRadius(pointRadius);
-	p2.rep.setFillColor(sf::Color::Green);
-		
-	p3.move(conv(calcCorner(bottomRightOld, center, rot, 3)));
-	p3.rep.setRadius(pointRadius);
-	p3.rep.setOrigin(pointRadius, pointRadius);
-	p3.rep.setFillColor(sf::Color::Magenta);
-
-	p5.move(conv(center.x, center.y));
-	p5.rep.setRadius(pointRadius);
-	p5.rep.setOrigin(pointRadius, pointRadius);
-	p5.rep.setFillColor(sf::Color::Blue);
 
 	rotation = rot;
-	nonRotatedCorners.push_back(conv(calcCorner(topRightOld, center, 0.0f, 1)));
-	nonRotatedCorners.push_back(conv(calcCorner(bottomRightOld, center, 0.0f, 2)));
-	nonRotatedCorners.push_back(conv(calcCorner(bottomLeftOld, center, 0.0f, 3)));
-	nonRotatedCorners.push_back(conv(calcCorner(topLeftOld, center, 0.0f, 4)));
 	
 }
 
@@ -67,12 +44,4 @@ void rectUse::outputBounds() {
 
 void rectUse::draw(sf::RenderWindow& window) {
 	window.draw(self);
-
-	if (drawingCorners) {
-		window.draw(p1.rep);
-		window.draw(p2.rep);
-		window.draw(p3.rep);
-		window.draw(p4.rep);
-		window.draw(p5.rep);
-	}
 }
