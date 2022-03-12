@@ -86,8 +86,11 @@ float returnDistToC(circleUse c, sf::Vector2f p) {
 	return pythag(p - conv(c.self.getPosition())) - c.self.getRadius();
 }
 
-void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<rectUse>& r, std::vector<circleUse> &radii, std::vector<sf::RectangleShape> &collisions, sf::RectangleShape &line) {
+void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<rectUse>& r, std::vector<circleUse> &radii, std::vector<sf::RectangleShape> &collisions, sf::RectangleShape &line, bool fog) {
 
+//	if (fog) {
+	//	std::cout << "Fog\n";
+//	}
 	sf::Vector2f convP = conv(p);
 
 	//Main function
@@ -146,27 +149,21 @@ void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<re
 			closestDistance = MIN(d, closestDistance);
 		}
 
-
-		radii.push_back(circleUse(closestDistance, currentPos, sf::Color(100, 100, 100), 0));
+		if(!fog)
+			radii.push_back(circleUse(closestDistance, currentPos, sf::Color(100, 100, 100), 0));
 
 		//Update Position
-
 		sf::Vector2f addV = sf::Vector2f(closestDistance * cos(d * 3.1415926f / 180.0f), closestDistance * sin(d * 3.1415926f / 180.0f));
 		addV.x *= dirComplement.x;
 		addV.y *= dirComplement.y;
 		currentPos += addV;
-
-
-
 	}
 
-//	std::cout << "Raymarch ended at " << currentPos.x << " " << currentPos.y << std::endl;
-	if (closestDistance < 1) {
-		sf::RectangleShape temp(sf::Vector2f(1, 1));
-		temp.setPosition(conv(currentPos));
+	if (closestDistance < 1 && !fog) {
+		//Collision occured on shape
 
-	//	std::cout << "Collision placed and occured at " << currentPos.x << " " << currentPos.y << std::endl;
-		collisions.push_back(temp);
+		collisions.push_back(sf::RectangleShape(sf::Vector2f(1.0f, 1.0f)));
+		std::prev(collisions.end())->setPosition(conv(currentPos));
 	}
 
 	//Line

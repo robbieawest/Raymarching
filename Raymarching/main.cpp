@@ -31,8 +31,13 @@ int main() {
 	std::vector<circleUse> radii;
 	std::vector<sf::RectangleShape> collisions;
 	sf::RectangleShape line;
-	std::vector<sf::RectangleShape> fogLines;
+
+	//Fog
+	int foglines = 72;
+	std::vector<sf::RectangleShape> fogLines(200, sf::RectangleShape());
 	line.setFillColor(sf::Color::White);
+
+
 
 	//FPS counter
 	//Font
@@ -71,7 +76,6 @@ int main() {
 					movingP = !movingP;
 
 					fog = false;
-					fogLines.clear();
 
 					if (movingP) {
 						radii.clear();
@@ -83,10 +87,10 @@ int main() {
 				else if (evnt.text.unicode == 's') {
 					//Start/Stop spinng
 					fog = false;
-					fogLines.clear();
 
 					if (!mouseRay && !movingP) {
 						movingP = !movingP;
+
 						if (movingP) {
 							radii.clear();
 							line.setSize(sf::Vector2f(0.0f, 0.0f));
@@ -106,7 +110,10 @@ int main() {
 					movingP = true;
 					mouseRay = false;
 					fog = true;
+
 					radii.clear();
+					collisions.clear();
+
 					line.setSize(sf::Vector2f(0.0f, 0.0f));
 				}
 				break;
@@ -144,30 +151,26 @@ int main() {
 				dir += 270.0f;
 			}
 
-			rayMarch(dir, p.pos, circles, squares, radii, collisions, line);
+			rayMarch(dir, p.pos, circles, squares, radii, collisions, line, fog);
 		}
 		else {
 			dir = dir >= 360.0f ? 0.0f : dir + 30.0f / deltaTime;
-			rayMarch(dir, p.pos, circles, squares, radii, collisions, line);
+			rayMarch(dir, p.pos, circles, squares, radii, collisions, line, fog);
 		}
 
 		if (fog) {
+
 			//Fog of war
 			//Shoot rays in 360
 
-			fogLines.clear();
 
 			dir = 0.0f;
-			int i = 0;
-			while (dir < 360.0f) {
+			for(int i = 0; i < foglines; i++){
 				
-				fogLines.push_back(sf::RectangleShape(sf::Vector2f(0.0f, 0.0f)));
-				rayMarch(dir, p.pos, circles, squares, radii, collisions, fogLines[i]);
+				rayMarch(dir, p.pos, circles, squares, radii, collisions, fogLines[i], fog);
 
-				i++;
-				dir += 5.0f;
+				dir += 360.0f / float(foglines);
 			}
-			collisions.clear();
 		}
 
 		fps.setString(std::to_string(deltaTime));
@@ -181,13 +184,13 @@ int main() {
 		for (auto& x : squares)x.draw(window);
 		for (auto& x : circles)x.draw(window);
 
-		//Point
-		window.draw(p.rep);
 
-		//Displays for algorithm
 
 		if (!fog) {
+			//Point
+			window.draw(p.rep);
 
+			
 			for (auto& x : radii)x.draw(window);
 			for (auto& x : collisions)window.draw(x);
 			window.draw(line);
