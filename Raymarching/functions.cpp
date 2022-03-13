@@ -88,9 +88,6 @@ float returnDistToC(circleUse c, sf::Vector2f p) {
 
 void rayMarch(float d, sf::Vector2f p, std::vector<circleUse>& c, std::vector<rectUse>& r, std::vector<circleUse> &radii, std::vector<sf::RectangleShape> &collisions, sf::RectangleShape &line, bool fog) {
 
-//	if (fog) {
-	//	std::cout << "Fog\n";
-//	}
 	sf::Vector2f convP = conv(p);
 
 	//Main function

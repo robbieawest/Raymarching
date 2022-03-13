@@ -33,8 +33,8 @@ int main() {
 	sf::RectangleShape line;
 
 	//Fog
-	int foglines = 72;
-	std::vector<sf::RectangleShape> fogLines(200, sf::RectangleShape());
+	int foglines = 150;
+	std::vector<sf::RectangleShape> fogLines(foglines, sf::RectangleShape());
 	line.setFillColor(sf::Color::White);
 
 
